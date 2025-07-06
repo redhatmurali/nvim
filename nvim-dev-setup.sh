@@ -1,46 +1,46 @@
 #!/bin/bash
 
-echo "🔧 Installing Neovim + Developer Setup..."
+echo "Installing Neovim + Developer Setup..."
 
-# 1. Install Neovim and required tools (Ubuntu/Debian)
+# 1. Install Neovim and tools
 sudo apt update
 sudo apt install -y neovim curl git unzip ripgrep python3-pip
 
-# 2. Install Node.js (needed by some LSP servers)
+# 2. Install Node.js (needed for many LSP servers)
 if ! command -v node &> /dev/null; then
-  echo "📦 Installing Node.js..."
+  echo "Installing Node.js..."
   curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
   sudo apt install -y nodejs
 fi
 
-# 3. Setup Neovim config
+# 3. Setup config directories
 mkdir -p ~/.config/nvim/autoload ~/.config/nvim/colors
 
-# 4. Install vim-plug plugin manager
-echo "🔌 Installing vim-plug..."
+# 4. Install vim-plug
+echo "Installing vim-plug..."
 curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs \
   https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-# 5. Create init.vim config
-echo "⚙️ Writing Neovim config..."
+# 5. Write init.vim configuration
+echo "Writing Neovim config..."
 
-cat > ~/.config/nvim/init.vim << 'EOF'
+cat > ~/.config/nvim/init.vim << 'VIMRC'
 " ========== Plugins ==========
 call plug#begin('~/.config/nvim/plugged')
 
-" Color schemes
+" Themes
 Plug 'morhetz/gruvbox'
 Plug 'catppuccin/vim', { 'as': 'catppuccin' }
 
-" Telescope and dependencies
+" Telescope
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 
-" LSP and Autocompletion
-Plug 'neovim/nvim-lspconfig'        " Config for built-in LSP
-Plug 'hrsh7th/nvim-cmp'             " Completion plugin
-Plug 'hrsh7th/cmp-nvim-lsp'         " LSP source for nvim-cmp
-Plug 'L3MON4D3/LuaSnip'             " Snippet engine
+" LSP and Completion
+Plug 'neovim/nvim-lspconfig'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'L3MON4D3/LuaSnip'
 
 call plug#end()
 
@@ -60,13 +60,13 @@ nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
 " ========== LSP Setup ==========
-lua << EOF
+lua << LUA
 require('lspconfig').pyright.setup{}
 require('lspconfig').bashls.setup{}
-EOF
+LUA
 
 " ========== Completion ==========
-lua << EOF
+lua << LUA
 local cmp = require('cmp')
 cmp.setup({
   mapping = {
@@ -77,10 +77,10 @@ cmp.setup({
     { name = 'nvim_lsp' },
   },
 })
-EOF
-EOF
+LUA
+VIMRC
 
-# 6. Download color schemes
+# 6. Download colorschemes
 curl -fsSL https://raw.githubusercontent.com/morhetz/gruvbox/master/colors/gruvbox.vim \
   -o ~/.config/nvim/colors/gruvbox.vim
 
@@ -88,14 +88,15 @@ curl -fsSL https://raw.githubusercontent.com/catppuccin/vim/main/colors/catppucc
   -o ~/.config/nvim/colors/catppuccin_mocha.vim
 
 # 7. Install plugins
-echo "📦 Installing plugins..."
+echo "Installing Neovim plugins..."
 nvim +PlugInstall +qall
 
-# 8. Install Python LSP (pyright) and bash LSP
-echo "🧠 Installing LSP servers..."
-sudo npm install -g pyright
-sudo npm install -g bash-language-server
+# 8. Install LSP servers
+echo "Installing language servers..."
+sudo npm install -g pyright bash-language-server
 
-echo "✅ Neovim developer setup complete!"
-echo "💡 Open Neovim with: nvim"
-echo "🔎 Use <leader>ff to find files (Telescope)"
+# 9. Done
+echo ""
+echo "✅ Neovim Developer Setup Complete!"
+echo "👉 Launch Neovim with: nvim"
+echo "🔍 Inside Neovim, press <leader>ff to find files using Telescope"
